@@ -102,6 +102,10 @@ protected:
     virtual void mouseMoveEvent(QMouseEvent *event);
     virtual void mouseReleaseEvent(QMouseEvent *event);
     virtual void wheelEvent(QWheelEvent *event);
+
+    int _numScheduledScalings;
+    void wheelZoomEvent(QWheelEvent *event);
+
     virtual void leaveEvent ( QEvent * event);
 
     virtual void focusOutEvent ( QFocusEvent * event );
@@ -182,6 +186,9 @@ private:
 private slots:
 
     void settingChanged(QVariant newValue);
+    void wheelZoomEventScalingTime(qreal x);
+    void wheelZoomEventAnimFinished();
+
 
 public slots:
 
