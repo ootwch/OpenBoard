@@ -439,6 +439,11 @@ void UBPlatformUtils::showFullScreen(QWidget *pWidget)
     pWidget->showFullScreen();
 }
 
+void UBPlatformUtils::showNormal(QWidget *pWidget)
+{
+    pWidget->showNormal();
+}
+
 void UBPlatformUtils::showOSK(bool show)
 {
     if (show) {
