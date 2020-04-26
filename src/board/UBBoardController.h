@@ -197,6 +197,9 @@ class UBBoardController : public UBDocumentContainer
 
         // Shortcuts
 
+        QList<QAction*> getActions();
+        QList<QShortcut*> getShortcuts();
+
         QShortcut *actionColorRotate;
         QShortcut *actionWidthRotate;
 
@@ -278,6 +281,7 @@ class UBBoardController : public UBDocumentContainer
         void stopScript();
 
         void saveData(SaveFlags fls = sf_none);
+        void shortcutsChanged();
 
         //void regenerateThumbnails();
 
