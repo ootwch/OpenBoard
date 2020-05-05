@@ -125,6 +125,7 @@ UBBoardView::UBBoardView (UBBoardController* pController, int pStartLayer, int p
     , mMultipleSelectionIsEnabled(false)
     , bIsControl(isControl)
     , bIsDesktop(isDesktop)
+    , tabletDeviceActive(false)
 {
     init ();
 
@@ -282,8 +283,16 @@ bool UBBoardView::event (QEvent * e)
         }
     }
 
+    if (e->type() == QEvent::TabletEnterProximity || e->type() == QEvent::TabletLeaveProximity) {
+               bool active = e->type() == QEvent::TabletEnterProximity? 1:0;
+               tabletDeviceActive = active;
+               return true;
+           }
+
     return QGraphicsView::event (e);
 }
+
+
 
 void UBBoardView::tabletEvent (QTabletEvent * event)
 {
@@ -925,6 +934,7 @@ void UBBoardView::longPressEvent()
 
 void UBBoardView::mousePressEvent (QMouseEvent *event)
 {
+
     if (!bIsControl && !bIsDesktop) {
         event->ignore();
         return;
@@ -1028,7 +1038,7 @@ void UBBoardView::mousePressEvent (QMouseEvent *event)
             if(UBDrawingController::drawingController()->mActiveRuler==NULL) {
                 viewport()->setCursor (QCursor (Qt::BlankCursor));
             }
-            if (scene () && !mTabletStylusIsPressed) {
+            if (scene () && !mTabletStylusIsPressed && !tabletDeviceActive) { // TODO: mTabletStylusIsPressed does not work - why?
                 if (currentTool == UBStylusTool::Eraser) {
                     connect(&mLongPressTimer, SIGNAL(timeout()), this, SLOT(longPressEvent()));
                     mLongPressTimer.start();
@@ -1041,6 +1051,8 @@ void UBBoardView::mousePressEvent (QMouseEvent *event)
 }
 
 
+
+
 void UBBoardView::mouseMoveEvent (QMouseEvent *event)
 {
     //    static QTime lastCallTime;
@@ -1049,6 +1061,15 @@ void UBBoardView::mouseMoveEvent (QMouseEvent *event)
     //    }
 
     //  QTime mouseMoveTime = QTime::currentTime();
+
+/*
+    if(tabletDeviceActive)
+    {
+        event->ignore();
+        return;
+    }
+*/
+
     if(!mIsDragInProgress && ((mapToScene(event->pos()) - mLastPressedMousePos).manhattanLength() < QApplication::startDragDistance())) {
         return;
     }
@@ -1164,7 +1185,7 @@ void UBBoardView::mouseMoveEvent (QMouseEvent *event)
     } break;
 
     default:
-        if (!mTabletStylusIsPressed && scene()) {
+        if (!mTabletStylusIsPressed && !tabletDeviceActive && scene()) { // TODO: Why does mTabletStylusPressed not work as expected?
             scene()->inputDeviceMove(mapToScene(UBGeometryUtils::pointConstrainedInRect(event->pos(), rect())) , mMouseButtonIsPressed);
         }
         event->accept ();
