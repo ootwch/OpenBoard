@@ -325,11 +325,13 @@ void UBBoardView::tabletEvent (QTabletEvent * event)
     if (((currentTool == UBStylusTool::Pen || currentTool == UBStylusTool::Line) && mPenPressureSensitive) ||
             (currentTool == UBStylusTool::Marker && mMarkerPressureSensitive))
         pressure = event->pressure ();
-    else{
-        //Explanation: rerouting to mouse event
-        event->setAccepted (false);
-        return;
-    }
+
+//    Mouse event does not handle tablet events anymore
+//    else{
+//        //Explanation: rerouting to mouse event
+//        event->setAccepted (false);
+//        return;
+//    }
 
     bool acceptEvent = true;
 #ifdef Q_OS_OSX
