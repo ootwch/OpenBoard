@@ -34,9 +34,8 @@
 #include <frameworks/UBPlatformUtils.h>
 #ifndef USE_XPDF
     #include <poppler/cpp/poppler-version.h>
-#else
-	#define GooString GString
 #endif
+
 #include "core/memcheck.h"
 
 QAtomicInt XPDFRenderer::sInstancesCount = 0;
@@ -58,8 +57,11 @@ XPDFRenderer::XPDFRenderer(const QString &filename, bool importingFile)
 #endif
         globalParams->setupBaseFonts(QFile::encodeName(UBPlatformUtils::applicationResourcesDirectory() + "/" + "fonts").data());
     }
-
-mDocument = new PDFDoc(new GooString(filename.toLocal8Bit()), 0, 0, 0); // the filename GString is deleted on PDFDoc desctruction
+#ifdef USE_XPDF
+    mDocument = new PDFDoc(new GString(filename.toLocal8Bit()), 0, 0, 0); // the filename GString is deleted on PDFDoc desctruction
+#else
+    mDocument = new PDFDoc(new GooString(filename.toLocal8Bit()), 0, 0, 0); // the filename GString is deleted on PDFDoc desctruction
+#endif
     sInstancesCount.ref();
 }
 
